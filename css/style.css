@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat&family=Dancing+Script:wght@700&family=Roboto&display=swap');
+body {
+  background: url(../img/image.jpg);
+  background-size: cover;
+  font-family: 'Roboto', sans-serif;
+  height: 100vh;
+}
+
+.wrapper {
+  width: 900px;
+  margin: 30px auto;
+  background: rgba(255, 255, 255, .7);
+  text-align: center;
+  padding: 15px;
+}
+
+.title {
+  font-family: 'Dancing Script', cursive;
+  font-weight: 900;
+  font-size: 50px;
+  text-transform: uppercase;
+  color: rgb(61, 21, 240);
+}
+
+.form {
+  font-family: 'Caveat', cursive;
+  font-size:36px;
+  padding: 15px;
+  margin-bottom: 30px;
+}
+
+.btn {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+  text-transform: uppercase;
+  border-radius: 10px;
+  background-color: blue;
+  color: azure;
+  border: none;
+  padding: 10px 25px;
+}
+
+.btn__add {
+  margin-top: 30px;
+  
+  /*font-size: 18px;*/
+}
+
+.btn__del {
+  /*padding: 5px 15px;
+  font-size: 12px;*/
+}
+
+.shopping__list {
+margin-bottom: 50px;
+}
+
+.table {
+  font-family: 'Roboto', sans-serif;
+  font-size: 20px;
+  margin: auto;
+  border: 3px solid blue;
+  padding: 20px;
+}
+
+.row__head {
+  padding-right: 20px;
+  padding-bottom: 20px;
+}
+
+.row__head:last-child {
+  padding-right: 0;
+}
+
+.total {
+  font-family: 'Dancing Script', cursive;
+  font-weight: 900;
+  font-size: 30px;
+  margin-top: 20px;
+}
+
+.bought__total,
+.unb__total {
+  font-family: 'Roboto', sans-serif;
+  font-size: 20px;
+}
+
+.buyed {
+  text-decoration: line-through;
+}
