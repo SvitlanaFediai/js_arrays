@@ -1,145 +1,110 @@
+'use strict';
+
 let shoppingList = [
-    {name: "potato",
+  { id: generateUniqueId(),
+    name: "potato",
     quantity: 2,
     buyed: false,
     price: 20,
     sum: 0
   }, 
-  {name: "banana",
+  { id: generateUniqueId(),
+    name: "banana",
     quantity: 1,
     buyed: true,
     price: 70,
     sum: 0
   }, 
-  {name: "cabbage",
+  { id: generateUniqueId(),
+    name: "cabbage",
     quantity: 2,
     buyed: false,
     price: 45,
     sum: 0
   }, 
-  {name: "carrot",
+  { id: generateUniqueId(),
+    name: "carrot",
     quantity: 1,
     buyed: true,
     price: 22,
     sum: 0
   }, 
-  {name: "eggs",
+  { id: generateUniqueId(),
+    name: "eggs",
     quantity: 2,
     buyed: true,
     price: 70,
     sum: 0
   }, 
-  
 ];
 
-calcSum();
-shoppingList.sort(sorting);
-printProduct(shoppingList);
+let nameProduct = document.getElementById('name'),
+    quantity = document.getElementById('qty'),
+    price = document.getElementById('price');
 
+printProduct(shoppingList.sort(showExpensiveProductFirst));
+printProduct(shoppingList.sort(showExpensiveProductFirst));
 
-function calcSum() {
-  shoppingList.forEach((element) => {
-    element.sum = element.quantity * element.price;
-  });
-}
-
-//Sort method
-
-/*let sorted = [];
-
-shoppingList.forEach(function (elem) {
-
-  if (elem.buyed !== true) {
-    sorted.unshift(elem);
-  } else {
-    sorted.push(elem);
-  }
-})*/
-
-function sorting(elem) {
+//Sort product in array by buyed or not
+/*function sorting(elem) {
   if (elem.buyed) return 1 
   else return -1;
+}*/
+
+//Sort shopping items in array by two condition - by buyed and sum (from expensive first)
+function showExpensiveProductFirst(a, b) {
+  return a.buyed - b.buyed || b.sum - a.sum;
 }
 
-
 //Add array of product in HTML
-function printProduct(array) {
-let div = document.querySelector('.shopping__list'),
-    table = document.createElement('table'),
-    tbody = document.createElement('tbody'),
-    thead = document.createElement('thead'),
-    trh = document.createElement('tr');
-    
-div.innerHTML = '';
-table.classList.add('table');
+function printProduct() {
+  let div = document.querySelector('.shopping__list'),
+      table = document.createElement('table'),
+      tbody = document.createElement('tbody'),
+      thead = document.createElement('thead'),
+      trh = document.createElement('tr');
 
-trh.innerHTML = '<th class = "row__head">Product name</th><th class = "row__head">Quantity</th><th class = "row__head">Unit price, UAH</th><th class = "row__head">Subtotal, UAH</th>';
+  div.innerHTML = '';
+  table.classList.add('table');
 
-thead.appendChild(trh);
-table.append(thead, tbody);
+  trh.innerHTML = '<th class = "row__head">Product name</th><th class = "row__head">Quantity</th><th class = "row__head">Unit price, UAH</th><th class = "row__head">Subtotal, UAH</th><th class = "input row__head">Buy</th>';
 
-/*tr.appendChild(td);*/
+  thead.appendChild(trh);
+  table.append(thead, tbody);
 
-  array.forEach((product) => {
-    let tr = document.createElement('tr');
-        tr.classList.add('row');
-        tbody.appendChild(tr);
-        tr.innerHTML += `<td>${product.name}</td><td>${product.quantity}</td><td>${product.price}</td><td>${product.sum}</td><td><button class = "btn btn__del" data-name="${product.name}" type="button">Delete</button></td>`;
+  shoppingList.forEach((product) => {
+    product.sum = product.price * product.quantity;
+
+    let tr = document.createElement('tr'),
+        blockHTML = `<td>${product.name}</td><td>${product.quantity}</td><td>${product.price}</td><td>${product.sum}</td><input class="checkbox" type="checkbox" name="${product.name}" value="${product.buyed}"><button class="btn btn__del" data-name="${product.name}" data-id="${product.id}" type="button">Delete</button>`;
+        
+    tr.classList.add('row');
+    tr.innerHTML += blockHTML;
+    tbody.appendChild(tr);
     
     if (product.buyed === true) {
       tr.classList.add('buyed');
     }
-  });
-  
-  /*let delBtn = document.querySelectorAll('.btn__del');
-  delBtn.forEach((elem) => {
-    elem.addEventListener('click', function(e) {
-      if (e.target && e.target.classList.contains('btn__del')) {
-        let name = e.target.dataset.name
-        removeItem(name);
+    
+    let input = tr.getElementsByTagName('input');
+ 
+    for (let i = 0; i < input.length; i++ ) {
+      input[i].addEventListener('change', buyedProduct);
+
+      if (tr.classList.contains('buyed')) {
+        input[i].setAttribute('checked', true);
       }
-    });
-  });*/
-  let tr = document.createElement('tr');
-  tr.addEventListener('click', function(e){
-    if (e.target && e.target.classList.contains('btn__del')) {
-      let name = e.target.dataset.name
-      removeItem(name);
     }
   });
-
-  div.prepend(table); 
-}
-   
-
-//Buy item
-let buyBtn = document.querySelector('.btn__buy');
-buyBtn.addEventListener('click', buyItem);
-let nameProduct = document.getElementById('name');
-let quantity = document.getElementById('qty');
-let price = document.getElementById('price');
-
-function buyItem() {
   
-      /*priceProduct = document.getElementById('price'),
-      qtyProduct = document.getElementById('qty');*/
+  div.prepend(table);
+  total();
 
-  let found = shoppingList.find(element => element.name === nameProduct.value);
-  if (found) {
-    if (found.buyed === false) {
-      found.buyed = true;
-    }
-    else {
-       alert('This product has been bought');
-       return;
-    }
-  } else {
-    alert('No such product in the list');
-      return;
-  }
-
-  shoppingList.sort(sorting);
-  printProduct(shoppingList);
+  let deleteBtn = document.querySelectorAll('.btn__del');
+  deleteBtn.forEach((el) => {
+    el.addEventListener('click', removeItem);
+  })
+  
 }
 
 //Add item to shopping list
@@ -147,92 +112,83 @@ let addBtn = document.querySelector('.btn__add');
 addBtn.addEventListener('click', addItem);
 
 function addItem() {
+  if (nameProduct.value == '' || price.value == '') {
+		showWarning('Please, fill all fields!');
+		return;
+	}
+
   let found = shoppingList.find(element => element.name === nameProduct.value);
   
   if (found) {
-    found.buyed = false;
-
-    if (quantity.value === '') {
-      found.quantity++;
+    if (found.price === parseInt(price.value)) {
+      found.buyed = false;
+      found.quantity += parseInt(quantity.value);
+    } else {
+      shoppingList.push({
+        id: generateUniqueId(),
+        name: nameProduct.value,
+        quantity: parseInt(quantity.value),
+        buyed: false,
+        price: parseInt(price.value),
+        sum: 0,
+      });
     }
-    else {
-      found.quantity += quantity.value;
-    }
-    
   } else {
     shoppingList.push({
+      id: generateUniqueId(),
       name: nameProduct.value,
-      quantity: quantity.value,
+      quantity: parseInt(quantity.value),
       buyed: false,
-      price: price.value,
+      price: parseInt(price.value),
       sum: 0,
     });
   } 
 
-  calcSum();
-  shoppingList.sort(sorting);
-  printProduct(shoppingList);
-  
-}
-
-
-//Delete item
-function removeItem(name) {
-
-  for (let i = 0; i < shoppingList.length; i++) {
-    if (shoppingList[i].name === name) {
-      if (shoppingList[i].quantity > 0) {
-        shoppingList[i].quantity -= shoppingList[i].quantity
-      }
-      if (shoppingList[i].quantity < 1 || shoppingList[i].quantity === 0) {
-        shoppingList.splice(i, 1);
-      }
-      printProduct(shoppingList);
-      return
-
-    }
-    
-  }
-}
-removeItem();
-
-/*delBtn.addEventListener('click', function (e) {
-  node.parentNode.removeChild(node);
-}, false);
-  /*})
-
-})
-
-
-/*let newShoppingList = shoppingList;*/
-
-/*function removeItem() {
-
-  shoppingList.splice(i, 1);
-  printProduct();
-  /*newShoppingList = newShoppingList.filter(word => word.name !== nameProduct.value);
-  printProduct(newShoppingList);
-
+  printProduct(shoppingList.sort(showExpensiveProductFirst));
+  printProduct(shoppingList.sort(showExpensiveProductFirst));
   clearField();
+}
 
-  let i = shoppingList.findIndex(elem => elem.name === name);
-  shoppingList.splice(i, 1);
+//Buy item
+function buyedProduct() {
+  let item = shoppingList.find(element => element.name === this.name);
 
-  printProduct();
+  if (this.checked) {
+    this.parentNode.classList.add('buyed');
+    item.buyed = true;
+  } else {
+    this.parentNode.classList.remove('buyed');
+    item.buyed = false;
+  }
 
-  /*for (let i = 0; i < shoppingList.length; i++) {
-    shoppingList.splice(i, 1);
-    
-  } 
-}*/
-
-
+  total();
+  printProduct(shoppingList.sort(showExpensiveProductFirst));
+}
 
 //clear input field
 function clearField() {
   nameProduct.value = '';
+  quantity.value = 1;
+  price.value = '';
 }
 
+//Delete item
+function removeItem() {
+  let nameItem = this.dataset.name,
+      idItem = this.dataset.id,
+      userAnswer = confirm(`Are you sure you want to delete ${nameItem}?`);
+
+  if (userAnswer) {
+    for (let i = 0; i < shoppingList.length; i++) {
+      if (shoppingList[i].id === idItem) {
+        shoppingList.splice(i, 1);
+      }
+    }
+    
+  }
+  //shoppingList.sort(showExpensiveProductFirst);
+  printProduct();
+}
 
 //Sum total of all shopping list 
 function total(){
@@ -255,8 +211,27 @@ function total(){
   });
 
   totalResult.innerHTML = `The amount of all goods is ${amount.toFixed(2)} UAH`;
-  boughtResult.innerHTML = `The amount of all goods is ${boughtAmount.toFixed(2)} UAH`;
+  boughtResult.innerHTML = `The amount of all purchased goods is ${boughtAmount.toFixed(2)} UAH`;
   unbResult.innerHTML = `The amount of unacquired goods is ${unbAmount.toFixed(2)} UAH`;
-  
 }
-total();
+
+function showWarning(message) {
+	var dialog = document.createElement('div'),
+		dialogOverlay = document.createElement('div');
+
+	dialogOverlay.className = 'dialog-overlay';
+	dialog.className = 'dialog';
+
+	dialog.innerHTML = `<p>${message}</p>`;
+
+	document.body.append(dialogOverlay, dialog);
+
+	setTimeout(function(){
+		dialogOverlay.remove();
+		dialog.remove();
+	}, 3000);
+}
+
+function generateUniqueId() {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+}
